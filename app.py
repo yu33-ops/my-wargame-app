@@ -2,7 +2,7 @@ import streamlit as st
 import json
 import requests
 import time
-import pandas as pd  # 💡 核心加装：引入标准数据表工具，用于精准控制X轴标签
+import pandas as pd  
 
 def load_db():
     try:
@@ -123,7 +123,8 @@ with col_right:
             red_loss_rate, blue_loss_rate = 0.85, 0.10 
         else:
             winner = "战局僵持"
-            victory_text = f" = f"【惨烈拉锯僵持】：双方交战地域的总战力规模处于势均力敌态势（红方 {red_total_force:.0f} 对 蓝方 {blue_total_force:.0f}）。两军编制要素相互克制，爆发惨烈拉锯，战场陷入僵持阻击阶段。"
+            # 💡 核心修复点：删掉了连续错误的 f"=f" 粘连，缩进全部精准对齐
+            victory_text = f"【惨烈拉锯僵持】：双方交战地域的总战力规模处于势均力敌态势（红方 {red_total_force:.0f} 对 蓝方 {blue_total_force:.0f}）。两军编制要素相互克制，爆发惨烈拉锯，战场陷入僵持阻击阶段。"
             red_loss_rate, blue_loss_rate = 0.40, 0.45 
 
         red_loss_text_list = []
@@ -179,15 +180,13 @@ with col_right:
             # ==================== 📊 🔥 核心升级：将红蓝双方绑定在 X 轴上的标准图表 ====================
             st.subheader("📈 3. 红蓝双边经济损耗直观对比 (单位: 万元)")
             
-            # 💡 算法层：创建一个 Pandas 数据表，将“阵营”设置为行的索引（也就是强制作为 X轴）
             chart_dataframe = pd.DataFrame(
                 {
                     "经济损失总额(万元)": [red_total_cost, blue_total_cost]
                 },
-                index=["🔴 红方阵营", "🔵 蓝方阵营"]  # 这一行决定了 X轴 上显示的内容
+                index=["🔴 红方阵营", "🔵 蓝方阵营"]  
             )
             
-            # 调用原生柱状图组件，它会自动把 index 渲染在 X轴上，柱子上方绝对空空如也，极度干净！
             st.bar_chart(chart_dataframe)
             # ==============================================================================
 
@@ -197,8 +196,6 @@ with col_right:
             
     else:
         st.write("👈 请在左侧动态调整两军编成。当前系统已切换为最科学的【AI大模型文学渲染过程 + Python底层客观推演算法】。")
-
-
 
 
 
