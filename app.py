@@ -171,10 +171,10 @@ with col_right:
             ai_battle_process = call_aliyun_script_generator(ai_prompt, red_summary, blue_summary, keywords, winner)
             st.success("✨ 渡海登岛专项战役想定推演完成！")
             
-            st.subheader("🎬 1. 战场高逼真动态想定描述")
+            st.subheader("🎬 1. 战场动态想定描述")
             st.info(ai_battle_process)
             
-            st.subheader("📊 2. 武器级高精度战损统计（军事算法层计算）")
+            st.subheader("📊 2. 武器级战损统计")
             c1, c2 = st.columns(2)
             with c1:
                 st.markdown("### 🔴 红方战损报告")
@@ -201,7 +201,7 @@ with col_right:
             )
             st.bar_chart(chart_dataframe)
 
-            st.subheader("🏆 4. 总体攻防胜负判定（算法客观判定）")
+            st.subheader("🏆 4. 总体攻防胜负判定")
             st.warning(victory_text)
             
     else:
