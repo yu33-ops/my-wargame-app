@@ -176,17 +176,38 @@ with col_right:
 2. 必须重点突出【{keywords}】里的天气环境（如夜间、暴雨等）对双方士兵视线和先进雷达兵器的严重干扰干扰。
 3. 直接输出描述文本，不要写任何类似于“好的，这是为您生成的场景”等客套废话。"""
 
+       with col_right:
+    st.header("📄 作战仿真想定推演报告")
+    
+    # ==================== 🔥 新增：参战装备视觉画廊展示 ====================
+    st.subheader("📷 当前参战核心主战装备点阅")
+    # 把用户选中的红蓝双方所有装备名称组合在一起
+    all_selected_names = [v["名称"] for k, v in red_inventory.items()] + [v["名称"] for k, v in blue_inventory.items()]
+    
+    if all_selected_names:
+        # 动态创建多列，有几种装备就创建几个图片格
+        img_cols = st.columns(len(all_selected_names))
+        for idx, eq_name in enumerate(all_selected_names):
+            with img_cols[idx]:
+                # 检查图片字典里有没有这张图
+                img_url = EQUIPMENT_IMAGES.get(eq_name, "https://placeholder.com")
+                # 漂亮地渲染图片，use_container_width=True 让图片自动撑满格子
+                st.image(img_url, caption=f"⚔️ {eq_name}", use_container_width=True)
+    # ======================================================================
+
+    if run_button:
+        # ...（保留你之前的红蓝大模型计算、数据打包、Prompt发送代码）...
+        
         with st.spinner("🚀 AI大模型正在渲染多维高逼真战场想定剧本..."):
-            ai_battle_process = call_aliyun_script_generator(ai_prompt)
+            # ...（保留你之前的 call_aliyun_script_generator 请求与 json 解析代码）...
             
             st.success("✨ 论文级双驱动（大模型文学渲染 + Python精密仿真算法）推演完成！")
             
-            # 6. 漂亮地渲染融合后的真实结果
-            # 展现大模型实时生成的生动过程
+            # 展示想定过程描述
             st.subheader("🎬 1. 战场高逼真动态想定描述（AI大模型生成）")
             st.info(ai_battle_process)
             
-            # 展现 Python 精准计算的数据损耗与绝对符合逻辑的价格
+            # 展示精准战损（可以把损耗报告和图片结合在一起！）
             st.subheader("📊 2. 武器级高精度战损统计（军事算法层计算）")
             c1, c2 = st.columns(2)
             with c1:
@@ -205,12 +226,13 @@ with col_right:
                     st.success("- 该装备编队无明显受损")
                 st.metric(label="蓝方精确损失总额", value=f"{blue_total_cost} 万元")
             
-            # 展现 Python 铁面无私判定的兵力胜负
+            # 展现 Python 客观判定的兵力胜负
             st.subheader("🏆 3. 总体技战术胜负判定（算法客观判定）")
             st.warning(victory_text)
             
     else:
         st.write("👈 请在左侧动态调整两军编成。当前系统已切换为最科学的【AI大模型文学渲染过程 + Python底层客观推演算法】。")
+
 # ========== 前端美化：红蓝装备图片网址映射表 ==========
 EQUIPMENT_IMAGES = {
     "99A式主战坦克": "https://178.com",  # 示例图，可替换为你喜欢的真实高清图
