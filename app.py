@@ -2,6 +2,11 @@ import streamlit as st
 import json
 import requests
 import time
+import matplotlib.pyplot as plt
+
+# 完美解决云端 Linux 服务器画图时中文乱码、正负号显示问题
+plt.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans', 'Arial Unicode MS']
+plt.rcParams['axes.unicode_minus'] = False
 
 def load_db():
     try:
@@ -50,7 +55,7 @@ def call_aliyun_script_generator(prompt):
 
 # ========== Streamlit 网页前端展示逻辑 ==========
 st.set_page_config(page_title="科学级兵棋推演想定智能生成系统", layout="wide")
-st.title("🎖️ 科学级兵棋推演想定智能生成系统 (对称看板完全体)")
+st.title("🎖️ 科学级兵棋推演想定智能生成系统 (标准二维图表版)")
 st.write("根据陆军兵种大学大语言模型想定生成论文架构开发（大模型剧本 + Python专家算法双驱动版）")
 
 API_KEY = "sk-ws-H.EYYRXHM.8hPe.MEUCIF6taU1uYI2wo2DJTG3DTmsA8cdnH38iLmu6x_etID0JAiEAsoxe2dxqlRAPW4p_3BFEoZq7XSeY4YGBy4ffDN-tjX0"
@@ -152,56 +157,69 @@ with col_right:
             ai_battle_process = call_aliyun_script_generator(ai_prompt)
             st.success("✨ 论文级双驱动推演完成！")
             
-            # 展示大模型剧本过程
+            # 展现大模型过程描述
             st.subheader("🎬 1. 战场高逼真动态想定描述（AI大模型生成）")
             st.info(ai_battle_process)
             
-            # ==== ⚙️ 核心排版重构：顶部价格 ➔ 中间柱状图 ➔ 底部阵营名称 ====
-            st.subheader("📊 2. 武器级高精度战损统计（双侧对称数据看板）")
-            
-            # 建立左右对称的两列布局
+            # 展示具体的战损文本细节
+            st.subheader("📊 2. 武器级高精度战损统计")
             c1, c2 = st.columns(2)
-            
-            # 为了防止进度条比例爆表，动态计算一个战损百分比作为柱状图的高度依据
-            total_sum = red_total_cost + blue_total_cost if (red_total_cost + blue_total_cost) > 0 else 1
-            red_percent = red_total_cost / total_sum
-            blue_percent = blue_total_cost / total_sum
-            
             with c1:
-                # 1. 顶部：高亮巨幕显示红方精确经济损失价格
-                st.metric(label="🔴 损失总额 (万元)", value=f"{red_total_cost} 万元")
-                
-                # 2. 中间：高科技红方战损比例柱状能量条
-                st.progress(red_percent)
-                
-                # 3. 下面/文字：红方战损装备明细清单
                 st.markdown("**🔴 红方部队损耗清单**")
                 if red_loss_text_list:
                     st.error("\n".join([f"- {item}" for item in red_loss_text_list]))
                 else:
                     st.success("- 该装备编队无明显受损")
-                    
             with c2:
-                # 1. 顶部：高亮巨幕显示蓝方精确经济损失价格
-                st.metric(label="🔵 损失总额 (万元)", value=f"{blue_total_cost} 万元")
-                
-                # 2. 中间：高科技蓝方战损比例柱状能量条
-                st.progress(blue_percent)
-                
-                # 3. 下面/文字：蓝方战损装备明细清单
                 st.markdown("**🔵 蓝方部队损耗清单**")
                 if blue_loss_text_list:
                     st.error("\n".join([f"- {item}" for item in blue_loss_text_list]))
                 else:
                     st.success("- 该装备编队无明显受损")
+            
+            # ==== 📊 ⚡ 终极加装：带标准 X轴、Y轴 且顶部显示精确价格的柱状图 ====
+            st.subheader("📈 3. 红蓝双边经济损耗直观对比 (标准二维坐标系)")
+            
+            # 1. 算法创建 Matplotlib 画布对象
+            fig, ax = plt.subplots(figsize=(7, 4.5))
+            
+            # 2. 设定 X 轴标签与 Y 轴的具体数值
+            x_labels = ['🔴 红方阵营', '🔵 蓝方阵营']
+            y_values = [red_total_cost, blue_total_cost]
+            bar_colors = ['#dc3545', '#17a2b8']  # 经典的军工红蓝配色
+            
+            # 3. 绘制柱状图并微调柱子宽度
+            bars = ax.bar(x_labels, y_values, color=bar_colors, width=0.4)
+            
+            # 4. 精密标签算法：在每一个柱子的正上方，高亮打印具体的万元价格
+            for bar in bars:
+                height = bar.get_height()
+                ax.annotate(f'{int(height)} 万元',
+                            xy=(bar.get_x() + bar.get_width() / 2, height),
+                            xytext=(0, 5),  # 向上偏移 5 个像素，防止压到柱子
+                            textcoords="offset points",
+                            ha='center', va='bottom', fontsize=11, fontweight='bold', color='#333333')
+            
+            # 5. 装饰坐标轴标签
+            ax.set_ylabel('经济损失总额 (单位: 万元)', fontsize=10, fontweight='bold')
+            ax.set_title('红蓝两军演习战损经济开支对比大屏', fontsize=12, fontweight='bold', pad=15)
+            
+            # 6. 给 Y 轴留出顶部空间，防止顶部的数字文字出界被切掉
+            if max(y_values) > 0:
+                ax.set_ylim(0, max(y_values) * 1.2)
+            else:
+                ax.set_ylim(0, 10000)
+                
+            # 7. 渲染到网页上
+            st.pyplot(fig)
             # ==============================================================================
 
             # 展现判定结果
-            st.subheader("🏆 3. 总体技战术胜负判定（算法客观判定）")
+            st.subheader("🏆 4. 总体技战术胜负判定（算法客观判定）")
             st.warning(victory_text)
             
     else:
-        st.write("👈 请在左侧动态调整两军编成。当前系统已切换为最科学的【AI大模型文学渲染过程 + Python底层客观推演算法】。")
+
 
 
 
