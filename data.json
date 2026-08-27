@@ -1,0 +1,26 @@
+{
+  "RED_FORCES": {
+    "ZTZ-99A": {
+      "name": "99A式主战坦克",
+      "cost_million_rmb": 20,
+      "performance": "装甲极厚，配备125mm滑膛炮，陆战之王"
+    },
+    "WZ-10": {
+      "name": "直-10武装直升机",
+      "cost_million_rmb": 50,
+      "performance": "擅长反坦克与对地突击，机动性强"
+    }
+  },
+  "BLUE_FORCES": {
+    "M1A2": {
+      "name": "M1A2主战坦克",
+      "cost_million_rmb": 60,
+      "performance": "信息化程度极高，配备120mm滑膛炮，火力强悍"
+    },
+    "AH-64": {
+      "name": "阿帕奇武装直升机",
+      "cost_million_rmb": 140,
+      "performance": "全天候对地攻击，配有长弓雷达，反装甲能力极强"
+    }
+  }
+}
