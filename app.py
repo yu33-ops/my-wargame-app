@@ -39,7 +39,7 @@ def call_aliyun_script_generator(prompt):
     try:
         response = requests.post(url, headers=headers, json=data, timeout=15, proxies={"http": None, "https": None})
         if response.status_code == 200:
-            return response.json()["choices"][0]["message"]["content"]
+            return response.json()["choices"]["message"]["content"]
     except Exception:
         pass
     
@@ -56,7 +56,8 @@ def call_aliyun_script_generator(prompt):
 
 # ========== Streamlit 网页前端展示逻辑 ==========
 st.set_page_config(page_title="科学级兵棋推演想定智能生成系统", layout="wide")
-st.title("🎖️ 科学级兵棋推演想定智能生成系统 (算法+大模型双驱动完全体)")
+st.title("🎖️ 科学级兵棋推演想定智能生成系统 (数据可视化完全体)")
+st.write("根据陆军兵种大学大语言模型想定生成论文架构（思维链整合）开发")
 
 # 填入合规的阿里云API Key
 API_KEY = "sk-ws-H.EYYRXHM.8hPe.MEUCIF6taU1uYI2wo2DJTG3DTmsA8cdnH38iLmu6x_etID0JAiEAsoxe2dxqlRAPW4p_3BFEoZq7XSeY4YGBy4ffDN-tjX0"
@@ -121,33 +122,29 @@ with col_right:
             if "防空" in v["名称"]: current_weight *= w_ad_modifier
             blue_total_force += v["初始数量"] * current_weight
 
-        # 3. 判定最终战局和战损比例
-        # 防止分母为 0
         if blue_total_force == 0: blue_total_force = 1
         force_ratio = red_total_force / blue_total_force
 
+        # 3. 判定最终战局和战损比例
         if force_ratio >= 2.5:
             winner = "红方"
             victory_text = f"【红方压倒性大胜】：红方集结了绝对优势兵力（总战力积分 {red_total_force:.0f}），对蓝方防线（总战力积分 {blue_total_force:.0f}）形成高达 {force_ratio:.1f} 倍的代差级碾压。在强大的饱和火力与装甲洪流下，蓝方前沿阵地于冲突后迅速崩溃，红方先遣突击群成功全速贯穿战术纵深。"
             red_loss_rate, blue_loss_rate = 0.15, 0.90 # 红方轻微受损15%，蓝方几乎全歼损失90%
         elif force_ratio <= 0.4:
             winner = "蓝方"
-            victory_text = f"【蓝方防守大胜】：蓝方依托坚固的地形掩体与数字化火网（总战力积分 {blue_total_force:.0f}），对红方贸然推进的编队（总战力积分 {red_total_force:.0f}）实施了毁灭性的多维打击。红方进攻群在核心阵地前沿遭遇密集雷道覆盖与反装甲火力伏击，攻势被彻底瓦解，全线溃退。"
+            victory_text = f"【蓝方防守大胜】：蓝方依托坚固的地形掩体与数字化火网（总战力积分 {blue_total_force:.0f}），对红方贸然推进的编队（总战力积分 {red_total_force:.0f}）实施了毁灭性的多维打击。红方攻势被彻底瓦解，全线溃退。"
             red_loss_rate, blue_loss_rate = 0.85, 0.10 # 红方惨败损失85%，蓝方仅受损10%
         else:
             winner = "战局僵持"
-            victory_text = f"【惨烈拉锯僵持】：双方交战地域的总战力规模处于势均力敌态势（红方 {red_total_force:.0f} 对 蓝方 {blue_total_force:.0f}，比例约为 1:{1/force_ratio:.1f} if force_ratio<1 else force_ratio:.1f）。两军基于技术与编制优势相互克制，在密集的对冲中爆发惨烈拉锯，战场陷入僵持，互有极其沉重的消耗。"
+            victory_text = f"【惨烈拉锯僵持】：双方交战地域的总战力规模处于势均力敌态势（红方 {red_total_force:.0f} 对 蓝方 {blue_total_force:.0f}）。两军基于技术与编制优势相互克制，在密集的对冲中爆发惨烈拉锯，战场陷入僵持，互有极其沉重的消耗。"
             red_loss_rate, blue_loss_rate = 0.40, 0.45 # 僵持战，双方各自遭受约40%-45%的沉重对等损失
 
-        # 4. 根据战损比例，精密计算出每一门重武器的损失【绝对符合逻辑，数量绝不超标】
+        # 4. 根据战损比例，精密计算出每一门重武器的损失
         red_loss_text_list = []
         red_total_cost = 0
         for k, v in red_inventory.items():
-            # 基础战损数量
             loss_num = int(v["初始数量"] * red_loss_rate)
-            # 细节修正：无人机群往往消耗更大
             if "无人机" in v["名称"] and winner != "红方": loss_num = int(v["初始数量"] * min(red_loss_rate * 1.5, 1.0))
-            # 边界锁定：至少损失0，至多损失初始数量
             loss_num = max(0, min(loss_num, v["初始数量"]))
             if loss_num > 0:
                 red_loss_text_list.append(f"{v['名称']} 损失 {loss_num} 辆/架/套")
@@ -164,29 +161,19 @@ with col_right:
                 blue_total_cost += loss_num * v["单价_万元"]
         # ==============================================================================
 
-        # 5. 指挥大模型去专门扩写剧本（完全避免离线台词）
-        ai_prompt = f"""你是一位军事题材的小说家和战演场景主笔。
-请根据以下真实的推演参数，充分展开你的想象力，写一段 300 到 400 字、极具硝烟感、画面极其震撼和详实的现代战争想定场景描述。
-
-【交战背景】：红方派遣【{red_summary}】在【{keywords}】的恶劣环境中发起强攻；蓝方迅速出动【{blue_summary}】进行针对性迎击。
-【真实推演判定】：在这场冲突中，最终的结果判定为【{winner}】。
-
-【写作红线要求】：
-1. 绝对不要包含任何 JSON、数字统计或错误代码，纯写具有强烈临场感的交战文学描述。
-2. 必须重点突出【{keywords}】里的天气环境（如夜间、暴雨等）对双方士兵视线和先进雷达兵器的严重干扰干扰。
-3. 直接输出描述文本，不要写任何类似于“好的，这是为您生成的场景”等客套废话。"""
+        # 5. 指挥大模型去专门扩写剧本
+        ai_prompt = f"你是一位军事题材的小说家和战演场景主笔。请根据以下真实的推演参数，充分展开你的想象力，写一段 300 到 400 字、极具硝烟感、画面极其震撼和详实的现代战争想定场景描述。【交战背景】：红方派遣【{red_summary}】在【{keywords}】的恶劣环境中发起强攻；蓝方迅速出动【{blue_summary}】进行针对性迎击。【真实推演判定】：在这场冲突中，最终的结果判定为【{winner}】。【写作红线要求】：1. 绝对不要包含任何 JSON、数字统计或错误代码，纯写具有强烈临场感的交战文学描述。2. 必须重点突出【{keywords}】里的天气环境（如夜间、暴雨等）对双方士兵视线和先进雷达兵器的严重干扰干扰。3. 直接输出描述文本，不要写任何类似于“好的，这是为您生成的场景”等客套废话。"
 
         with st.spinner("🚀 AI大模型正在渲染多维高逼真战场想定剧本..."):
             ai_battle_process = call_aliyun_script_generator(ai_prompt)
             
             st.success("✨ 论文级双驱动（大模型文学渲染 + Python精密仿真算法）推演完成！")
             
-            # 6. 漂亮地渲染融合后的真实结果
-            # 展现大模型实时生成的生动过程
+            # 展示大模型实时生成的生动过程
             st.subheader("🎬 1. 战场高逼真动态想定描述（AI大模型生成）")
             st.info(ai_battle_process)
             
-            # 展现 Python 精准计算的数据损耗与绝对符合逻辑的价格
+            # 展示 Python 精准计算的数据损耗与绝对符合逻辑的价格
             st.subheader("📊 2. 武器级高精度战损统计（军事算法层计算）")
             c1, c2 = st.columns(2)
             with c1:
@@ -205,12 +192,24 @@ with col_right:
                     st.success("- 该装备编队无明显受损")
                 st.metric(label="蓝方精确损失总额", value=f"{blue_total_cost} 万元")
             
+            # ==================== 📊 🔥 核心加装：红蓝方经济损失对比柱状图 ====================
+            st.subheader("📈 3. 红蓝双边经济损耗直观对比 (单位: 万元)")
+            # 组装适合柱状图渲染的数据结构
+            chart_data = {
+                "🔴 红方总损失": [red_total_cost],
+                "🔵 蓝方总损失": [blue_total_cost]
+            }
+            # 调用原生网页高级图表组件，自动渲染出带渐变、极具动态科技感的柱状图
+            st.bar_chart(chart_data)
+            # ==============================================================================
+
             # 展现 Python 铁面无私判定的兵力胜负
-            st.subheader("🏆 3. 总体技战术胜负判定（算法客观判定）")
+            st.subheader("🏆 4. 总体技战术胜负判定（算法客观判定）")
             st.warning(victory_text)
             
     else:
         st.write("👈 请在左侧动态调整两军编成。当前系统已切换为最科学的【AI大模型文学渲染过程 + Python底层客观推演算法】。")
+
 
 
 
