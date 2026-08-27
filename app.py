@@ -182,7 +182,7 @@ with col_right:
                     st.error("\n".join([f"- {item}" for item in red_loss_text_list]))
                 else:
                     st.success("- 先遣突击队无明显装备损耗")
-                st.metric(label="红方抢滩损失总额", value=f"{red_total_cost} 万元")
+                st.metric(label="红方损失总额", value=f"{red_total_cost} 万元")
                     
             with c2:
                 st.markdown("### 🔵 蓝方战损报告")
@@ -190,7 +190,7 @@ with col_right:
                     st.error("\n".join([f"- {item}" for item in blue_loss_text_list]))
                 else:
                     st.success("- 岸防工事集群未受实质损耗")
-                st.metric(label="蓝方抗登损失总额", value=f"{blue_total_cost} 万元")
+                st.metric(label="蓝方损失总额", value=f"{blue_total_cost} 万元")
             
             st.subheader("📈 3. 双边战损经济开支直观对比 (单位: 万元)")
             chart_dataframe = pd.DataFrame(
