@@ -58,15 +58,15 @@ def call_aliyun_script_generator(prompt, red_summary, blue_summary, keywords, wi
     # 根据用户输入的关键词和阵营，现场拼接出一篇绝对扣题、字数饱满（400字以上）的两栖精细剧本，拒绝死板！
     local_script = (
         f"【渡海登岛战役演练仿真想定（智能动态生成）】\n\n"
-        f"一、一阶段【远程联合火力准备】：在【{keywords}】的背景突击下，红方突击群以两栖攻击舰为核心编队，率先释放强电磁制盲信号。大批察打一体无人机腾空而起实施防空压制。蓝方爱国者导弹发射防空网，海面硝烟弥漫。\n\n"
-        f"二、二阶段【水际滩头抗阻破障】：红方前遣编队动用【{red_summary}】在密集的远程弹道覆盖下强行突向滩头。蓝方滩头永备碉堡工事万弹齐发，动用【{blue_summary}】展开近岸疯狂拦截，水际障碍物被强行爆破，多型重武器近距离对冲火光冲天。\n\n"
-        f"三、三阶段【纵深核心阵地夺控】：经过白热化惨烈博弈，战局严格按照科学算法演变，最终呈现【{winner}】之势。双方在水际和纵深掩体交织的地带爆发大规模多维激战，彻底撕裂了防守平衡，多维攻防想定片段基本达成演练预期目标。"
+        f"一阶段【远程联合火力准备】：在【{keywords}】的背景突击下，红方突击群以两栖攻击舰为核心编队，率先释放强电磁制盲信号。大批察打一体无人机腾空而起实施防空压制。蓝方爱国者导弹发射防空网，海面硝烟弥漫。\n\n"
+        f"二阶段【水际滩头抗阻破障】：红方前遣编队动用【{red_summary}】在密集的远程弹道覆盖下强行突向滩头。蓝方滩头永备碉堡工事万弹齐发，动用【{blue_summary}】展开近岸疯狂拦截，水际障碍物被强行爆破，多型重武器近距离对冲火光冲天。\n\n"
+        f"三阶段【纵深核心阵地夺控】：经过白热化惨烈博弈，战局严格按照科学算法演变，最终呈现【{winner}】之势。双方在水际和纵深掩体交织的地带爆发大规模多维激战，彻底撕裂了防守平衡，多维攻防想定片段基本达成演练预期目标。"
     )
     return local_script
 
 # ========== Streamlit 网页前端展示逻辑 ==========
 st.set_page_config(page_title="科学级兵棋推演想定智能生成系统", layout="wide")
-st.title("🎖️ 科学级兵棋推演想定智能生成系统 (跨海战役完全体)")
+st.title("🎖️兵棋推演想定智能生成系统")
 st.write("根据陆军兵种大学大语言模型想定生成论文架构开发（大模型剧本 + Python专家算法双驱动版）")
 
 API_KEY = "sk-ws-H.EYYRXHM.8hPe.MEUCIF6taU1uYI2wo2DJTG3DTmsA8cdnH38iLmu6x_etID0JAiEAsoxe2dxqlRAPW4p_3BFEoZq7XSeY4YGBy4ffDN-tjX0"
@@ -75,10 +75,10 @@ db = load_db()
 col_left, col_right = st.columns([1, 1.2])
 
 with col_left:
-    st.header("📥 跨海登陆参数配置")
+    st.header("📥 战场参数配置")
     keywords = st.text_area("战场环境与行动关键词", "第一波次抢滩、联合火力准备、强电磁干扰、航道破障、蓝方滩头坚固工事反击")
     
-    st.subheader("🔴 红方跨海登陆编成")
+    st.subheader("🔴 红方兵力编成")
     red_options = list(db["红方阵营"].keys())
     selected_red = st.multiselect("请选择红方出动突击装备", red_options, default=red_options[:2])
     
@@ -88,7 +88,7 @@ with col_left:
         count = st.number_input(f"初始数量 ({eq_data['名称']})", min_value=1, max_value=100, value=15, key=f"red_{req_eq}")
         red_inventory[req_eq] = {"名称": eq_data["名称"], "初始数量": count, "单价_万元": eq_data["单价_万元"], "战力权重": eq_data.get("战力权重", 20)}
 
-    st.subheader("🔵 蓝方岸防抗登编成")
+    st.subheader("🔵 蓝方兵力编成")
     blue_options = list(db["蓝方阵营"].keys())
     selected_blue = st.multiselect("请选择蓝方守备拦截装备", blue_options, default=blue_options[:2])
     
@@ -98,10 +98,10 @@ with col_left:
         count = st.number_input(f"初始数量 ({eq_data['名称']})", min_value=1, max_value=100, value=10, key=f"blue_{req_eq}") 
         blue_inventory[req_eq] = {"名称": eq_data["名称"], "初始数量": count, "单价_万元": eq_data["单价_万元"], "战力权重": eq_data.get("战力权重", 22)}
 
-    run_button = st.button("🚀 开始自动化渡海推演", use_container_width=True)
+    run_button = st.button("🚀 开始自动化推演", use_container_width=True)
 
 with col_right:
-    st.header("📄 渡海登岛想定推演报告")
+    st.header("📄 战仿真想定推演报告")
     
     if run_button:
         red_summary = ", ".join([f"{v['初始数量']}辆/架/套 {v['名称']}" for k, v in red_inventory.items()])
@@ -161,9 +161,9 @@ with col_right:
             f"你是一位联合跨海登陆战役推演的军事想定主笔专家。请根据以下真实参数，必须写出一篇字数在 350 到 500 字之间、气势宏大、极具战术细节的详实两栖交战想定过程文本。"
             f"当前战场参数：红方初始群【{red_summary}】，在【{keywords}】的背景下强攻；蓝方守备拦截【{blue_summary}】。算法最终测算的局势胜负走向为【{winner}】。"
             f"【硬性写作框架规范】：你必须严格分为以下三个部分依次详细长篇扩写，字数必须充实饱满，禁止合并简写："
-            f"一、一阶段【远程联合火力准备】：详细描述红方导弹与无人机升空压制蓝方防空，海浪颠簸及强电磁干扰下的火力博弈场景；"
-            f"二、二阶段【水际滩头抗阻破障】：详细描写两栖突击车群在暴风雨和硝烟中强行冲滩，蓝方碉堡火网全开扫射，障碍物和雷障爆破的惨烈细节；"
-            f"三、三阶段【纵深核心阵地夺控】：结合最终结局【{winner}】，用长篇篇幅详实剖析两军围绕滩头主阵地的最后白热化对冲。直接输出想定纯文本，去掉任何多余客套废话！"
+            f"一阶段【远程联合火力准备】：详细描述红方导弹与无人机升空压制蓝方防空，海浪颠簸及强电磁干扰下的火力博弈场景；"
+            f"二阶段【水际滩头抗阻破障】：详细描写两栖突击车群在暴风雨和硝烟中强行冲滩，蓝方碉堡火网全开扫射，障碍物和雷障爆破的惨烈细节；"
+            f"三阶段【纵深核心阵地夺控】：结合最终结局【{winner}】，用长篇篇幅详实剖析两军围绕滩头主阵地的最后白热化对冲。直接输出想定纯文本，去掉任何多余客套废话！"
         )
 
         # 💡 将打包好的变量动态动态塞进函数，确保即使超时也会自适应生成剧本
@@ -171,13 +171,13 @@ with col_right:
             ai_battle_process = call_aliyun_script_generator(ai_prompt, red_summary, blue_summary, keywords, winner)
             st.success("✨ 渡海登岛专项战役想定推演完成！")
             
-            st.subheader("🎬 1. 渡海登岛联合战役想定描述（AI大模型三阶段渲染生成）")
+            st.subheader("🎬 1. 战场高逼真动态想定描述")
             st.info(ai_battle_process)
             
-            st.subheader("📊 2. 两栖抗阻精确战损统计（军事算法层计算）")
+            st.subheader("📊 2. 武器级高精度战损统计（军事算法层计算）")
             c1, c2 = st.columns(2)
             with c1:
-                st.markdown("### 🔴 红方抢滩突击群损耗")
+                st.markdown("### 🔴 红方战损报告")
                 if red_loss_text_list:
                     st.error("\n".join([f"- {item}" for item in red_loss_text_list]))
                 else:
@@ -185,14 +185,14 @@ with col_right:
                 st.metric(label="红方抢滩损失总额", value=f"{red_total_cost} 万元")
                     
             with c2:
-                st.markdown("### 🔵 蓝方守岛岸防群损耗")
+                st.markdown("### 🔵 蓝方战损报告")
                 if blue_loss_text_list:
                     st.error("\n".join([f"- {item}" for item in blue_loss_text_list]))
                 else:
                     st.success("- 岸防工事集群未受实质损耗")
                 st.metric(label="蓝方抗登损失总额", value=f"{blue_total_cost} 万元")
             
-            st.subheader("📈 3. 两栖双边战损经济开支直观对比 (单位: 万元)")
+            st.subheader("📈 3. 双边战损经济开支直观对比 (单位: 万元)")
             chart_dataframe = pd.DataFrame(
                 {
                     "经济损失总额(万元)": [red_total_cost, blue_total_cost, 0, 0, 0]
@@ -201,7 +201,7 @@ with col_right:
             )
             st.bar_chart(chart_dataframe)
 
-            st.subheader("🏆 4. 总体两栖攻防胜负判定（算法客观判定）")
+            st.subheader("🏆 4. 总体攻防胜负判定（算法客观判定）")
             st.warning(victory_text)
             
     else:
