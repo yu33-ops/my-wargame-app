@@ -177,40 +177,28 @@ with col_right:
                 else:
                     st.success("- 该装备编队无明显受损")
             
-            # ==== 📊 ⚡ 终极加装：带标准 X轴、Y轴 且顶部显示精确价格的柱状图 ====
+            # ==== 📊 ⚡ 终极加装：带标准 X轴、Y轴 的干净学术柱状图 ====
             st.subheader("📈 3. 红蓝双边经济损耗直观对比 (标准二维坐标系)")
             
-            # 1. 算法创建 Matplotlib 画布对象
             fig, ax = plt.subplots(figsize=(7, 4.5))
-            
-            # 2. 设定 X 轴标签与 Y 轴的具体数值
             x_labels = ['🔴 红方阵营', '🔵 蓝方阵营']
             y_values = [red_total_cost, blue_total_cost]
-            bar_colors = ['#dc3545', '#17a2b8']  # 经典的军工红蓝配色
+            bar_colors = ['#dc3545', '#17a2b8']  # 军工红蓝配色
             
-            # 3. 绘制柱状图并微调柱子宽度
-            bars = ax.bar(x_labels, y_values, color=bar_colors, width=0.4)
+            # 绘制柱状图（已移除顶部的数字标签，保持画面纯净）
+            ax.bar(x_labels, y_values, color=bar_colors, width=0.4)
             
-            # 4. 精密标签算法：在每一个柱子的正上方，高亮打印具体的万元价格
-            for bar in bars:
-                height = bar.get_height()
-                ax.annotate(f'{int(height)} 万元',
-                            xy=(bar.get_x() + bar.get_width() / 2, height),
-                            xytext=(0, 5),  # 向上偏移 5 个像素，防止压到柱子
-                            textcoords="offset points",
-                            ha='center', va='bottom', fontsize=11, fontweight='bold', color='#333333')
-            
-            # 5. 装饰坐标轴标签
+            # 装饰坐标轴标签
             ax.set_ylabel('经济损失总额 (单位: 万元)', fontsize=10, fontweight='bold')
-            ax.set_title('红蓝两军演习战损经济开支对比大屏', fontsize=12, fontweight='bold', pad=15)
+            ax.set_title('红蓝两军演习战损经济开支对比', fontsize=12, fontweight='bold', pad=15)
             
-            # 6. 给 Y 轴留出顶部空间，防止顶部的数字文字出界被切掉
+            # 自动调整 Y 轴的显示范围
             if max(y_values) > 0:
-                ax.set_ylim(0, max(y_values) * 1.2)
+                ax.set_ylim(0, max(y_values) * 1.1)
             else:
                 ax.set_ylim(0, 10000)
                 
-            # 7. 渲染到网页上
+            # 渲染到网页上
             st.pyplot(fig)
             # ==============================================================================
 
@@ -219,6 +207,8 @@ with col_right:
             st.warning(victory_text)
             
     else:
+        st.write("👈 请在左侧动态调整两军编成。当前系统已切换为最科学的【AI大模型文学渲染过程 + Python底层客观推演算法】。")
+
 
 
 
