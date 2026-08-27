@@ -211,6 +211,18 @@ with col_right:
             
     else:
         st.write("👈 请在左侧动态调整两军编成。当前系统已切换为最科学的【AI大模型文学渲染过程 + Python底层客观推演算法】。")
+# ========== 前端美化：红蓝装备图片网址映射表 ==========
+EQUIPMENT_IMAGES = {
+    "99A式主战坦克": "https://178.com",  # 示例图，可替换为你喜欢的真实高清图
+    "直-10武装直升机": "https://itc.cn",
+    "红旗-9B防空导弹": "https://sinaimg.cn",
+    "ASN-301反辐射 drones": "https://bjd.com.cn",
+    
+    "M1A2主战坦克": "https://sinaimg.cn",
+    "AH-64D阿帕奇直升机": "https://sinaimg.cn",
+    "爱国者-3防空导弹": "https://lhv.hk",
+    "MQ-9死神无人机": "https://zhimg.com"
+}
 
 
 
