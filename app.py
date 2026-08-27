@@ -51,9 +51,9 @@ def call_aliyun_llm(red_input, blue_input, keywords):
         return f"Error: 请求网络连接失败。具体原因: {e}"
 
 # ========== Streamlit 网页前端展示逻辑 ==========
-st.set_page_config(page_title="作战仿真想定自动化生成系统", layout="wide")
-st.title("🎖️ 作战仿真想定自动化生成系统 (论文标准版)")
-st.write("根据陆军兵种大学大语言模型想定生成论文架构（思维链整合）开发")
+st.set_page_config(page_title="新一代智能兵棋推演想定生成器", layout="wide")
+st.title("🎖️ 新一代智能兵棋推演想定生成器 (大模型版)")
+st.write("基于核心大模型推理技术及作战片段要素整合引擎开发")
 
 # 1. 软件左侧输入区
 st.sidebar.header("📥 推演参数输入")
